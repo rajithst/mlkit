@@ -7,6 +7,6 @@ class GradientDescentOptimizer:
 
     def minimize_logistic_cost(self, X_train, cost, weights):
         gradient = np.dot(X_train.T, cost)
-        average_gradient = gradient / X_train.shape[1]
+        average_gradient = gradient / X_train.shape[0]
         updated_weights = weights - self.learning_rate * average_gradient
         return updated_weights

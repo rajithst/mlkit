@@ -2,27 +2,32 @@ import numpy as np
 from optimizations.gradient_descent import GradientDescentOptimizer
 
 class LogisticRegression:
-    def __init__(self, learning_rate,optimizer = GradientDescentOptimizer):
+    def __init__(self, learning_rate=0.01,optimizer = GradientDescentOptimizer):
         self.learning_rate = learning_rate
-        self.optimizer = optimizer
+        self.optimizer = optimizer(self.learning_rate)
+        self.cost_log = None
 
-    def train(self, X_train, y_train,iterations=50):
+    def train(self, X_train, y_train,iterations=50,verbose=False):
         # train shape 200,3
         #weights shape 3,1
         self.weights = np.zeros((X_train.shape[1],1))
         cost_history = []
         for i in range(iterations):
-            predictions = self.predict(X_train)
+            predictions = self.predict(X_train,True)
             prediction_cost = self.__logistic_cost(y_train, predictions)
-            print(prediction_cost)
+            if verbose:
+                print(prediction_cost)
             cost_history.append(prediction_cost)
 
-            grad_cost = y_train-predictions
-            self.weights = self.optimizer(learning_rate=self.learning_rate).minimize_logistic_cost(X_train,grad_cost,self.weights)
+            grad_cost = predictions - y_train
+            self.weights = self.optimizer.minimize_logistic_cost(X_train,grad_cost,self.weights)
+        self.cost_log = cost_history
 
-    def predict(self, X):
-        hypothesis = np.dot(self.weights, X)
+    def predict(self, X,prob=False,threshold=0.5):
+        hypothesis = np.dot(X,self.weights)
         predicts = self.__sigmoid(hypothesis)
+        if prob is False:
+            predicts = (predicts>=threshold).astype(int)
         return predicts
 
     @staticmethod
@@ -33,5 +38,4 @@ class LogisticRegression:
     @staticmethod
     def __logistic_cost(true_labels, predictions):
         cost = -true_labels * np.log(predictions) - (1 - true_labels) * np.log(1 - predictions)
-        cost = cost.sum() / len(true_labels)
-        return cost
+        return cost.mean()
