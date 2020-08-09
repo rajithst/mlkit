@@ -1,13 +1,9 @@
 import numpy as np
 
-dataset = load_iris()
-X = dataset.data
-y = dataset.target
-
 
 class KMeans:
 
-    def __init__(self, n_clusters, n_init=10,iterations=1000, ):
+    def __init__(self, n_clusters, n_init=10, iterations=1000, ):
         self.n_clusters = n_clusters
         self.iterations = iterations
         self.centroid_initials = n_init
