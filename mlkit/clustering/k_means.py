@@ -13,13 +13,16 @@ class KMeans:
     def train(self, X):
         for init in self.centroid_initials:
             self.centroids = [X[np.random.randint(low=0, high=len(X))] for i in range(self.n_clusters)]
-            for iter in self.iterations:
+
+            for _ in self.iterations:
                 assign_centroids = np.c_[np.arange(0, len(X)), np.zeros(len(X)) * np.nan]
 
+                # cluster assignment and minimizing cost function
                 for i in range(len(X)):
                     distances = self.euclidean_distance(X[i], self.centroids)
                     assign_centroids[i, 1] = np.argmin(distances)
 
+                # move centroids
                 for k in range(self.n_clusters):
                     cluster_data = X[assign_centroids[:, 1] == k]
                     new_cluster = np.mean(cluster_data, axis=0)
